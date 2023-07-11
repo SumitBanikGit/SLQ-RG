@@ -1,0 +1,411 @@
+Author: Sumit Banik & Andreas Crivellin
+Date: 11.7.2023
+Name: SLQ
+Groups: {U1Y: U1, SU2L: SU2, SU3c: SU3}
+
+
+Fermions: {
+    Q : {Gen: 3, Qnb: {U1Y: 1/6, SU2L: 2, SU3c: 3}},
+    L : {Gen: 3, Qnb: {U1Y: -1/2, SU2L: 2}},
+    uR : {Gen: 3, Qnb: {U1Y: 2/3, SU3c: 3}},
+    dR : {Gen: 3, Qnb: {U1Y: -1/3, SU3c: 3}},
+    eR : {Gen: 3, Qnb: {U1Y: -1}},
+}
+
+RealScalars: {
+
+} 
+
+ComplexScalars: { 
+ 
+H : {RealFields: [Pi, Sigma], Norm: 1/sqrt(2), Qnb: {U1Y: 1/2, SU2L: 2}},
+LQ1 : {RealFields: [LQ1s, LQ1c], Norm: 1/sqrt(2), Qnb: {U1Y: -1/3, SU3c: 3}},
+LQ1B : {RealFields: [LQ1Bs, LQ1Bc], Norm: 1/sqrt(2), Qnb: {U1Y: -4/3, SU3c: 3}}, 
+LQ2 : {RealFields: [LQ2s, LQ2c], Norm: 1/sqrt(2), Qnb: {U1Y: 7/6, SU2L: 2, SU3c: 3}}, 
+LQ2B : {RealFields: [LQ2Bs, LQ2Bc], Norm: 1/sqrt(2), Qnb: {U1Y: 1/6, SU2L: 2, SU3c: 3}}, 
+LQ3 : {RealFields: [LQ3s, LQ3c], Norm: 1/sqrt(2), Qnb: {U1Y: -1/3, SU2L: 3, SU3c: 3}}, 
+
+} 
+ 
+Potential: { 
+ 
+Definitions: {
+        Htilde[i] : Eps[i,j]*Hbar[j],
+        auxEps : t(SU2, 3),
+        Eps3[i,j,k] : I * auxEps[i,j,k]
+        tGen : t(SU2,2),
+        Pauli[i,j,k] : 2*tGen[i,j,k]
+    },
+ 
+Yukawas: { 
+ 
+#From SM
+        Yu : Qbar[i,a] Htilde[i] uR[a],
+        Yd : Qbar[i,a] H[i] dR[a],
+        Ye : Lbar[i] H[i] eR, 
+#From L1
+        yRR1 : -LQ1bar[i] uR[i] eR,
+        yLL1 : - Q[a,c] Eps[a,b] L[b] LQ1bar[c],
+        yQLL1 : - Q[a,i] Eps[a,b] Q[b,j] LQ1[k] Eps3[i,j,k],
+        yQRR1 : -uR[i] dR[j] LQ1[k] Eps3[i,j,k], 
+#From L1B
+        yRR1B : -dR[c] eR LQ1Bbar[c],
+        yQRR1B : -uR[c1] uR[c2] LQ1B[c3] Eps3[c1,c2,c3], 
+#From L2
+        yRL2 : -uRbar[c] LQ2[a,c] Eps[a,b] L[b],
+        yLR2 : -Qbar[a,c] eR LQ2[a,c], 
+#From L2B
+        yRL2B : -dRbar[c] LQ2B[a,c] Eps[a,b] L[b], 
+#From L3
+        yLL3 : -Q[a,c] Eps[a,b] Pauli[i,b,d] LQ3bar[i,c] L[d],
+        yQLL3 : -Q[a,c1] Eps[a,b] Pauli[i,b,d] LQ3[i,c3] Q[d,c2] Eps3[c1,c2,c3], 
+
+ }, 
+
+ TrilinearTerms: { 
+
+#From L12B
+A12B : LQ2Bbar[a,c] H[a] LQ1[c],
+
+#From L2B3
+A2B3 : -LQ2Bbar[a,c] (Pauli[i,a,b]) LQ3[i,c] H[b], 
+
+#From L12B2B
+A12B2B : -LQ1[c1] LQ2B[a,c2] Eps[a,b] LQ2B[b,c3] Eps3[c1,c2,c3], 
+
+#From L1B22B
+A1B22B : -LQ1B[c1] LQ2[a,c2] Eps[a,b] LQ2B[b,c3] Eps3[c1,c2,c3], 
+ 
+ }, 
+ QuarticTerms: { 
+
+#From SM
+lambda : {(Hbar[i] H[i])**2,real}, 
+
+#From L1
+yLQ1 : {Hbar[i] H[i] LQ1bar[j] LQ1[j],real},
+YQ11 : {-1/2 LQ1bar[c1]LQ1[c1]LQ1bar[c2]LQ1[c2],real}, 
+
+#From L1B
+yLQ1B : {Hbar[i] H[i] LQ1Bbar[j] LQ1B[j],real}, 
+YQ1B1 : {-1/2 LQ1Bbar[c1]LQ1B[c1]LQ1Bbar[c2]LQ1B[c2],real}, 
+
+#From L2
+yLQ2 : {Hbar[i] H[i] LQ2bar[j,a] LQ2[j,a],real},
+y22 :  {Hbar[i] Eps[i,j] LQ2bar[j,a] H[b] Eps[b,c] LQ2[c,a],real},
+YQ21 : {-1/2 LQ2bar[a,c1]LQ2[a,c1]LQ2bar[b,c2]LQ2[b,c2],real},
+YQ23 : {-1/2 LQ2bar[a,c1]LQ2[a,c2]LQ2bar[b,c2]LQ2[b,c1],real}, 
+
+#From L2B
+yLQ2B : {Hbar[i] H[i] LQ2Bbar[j,a] LQ2B[j,a],real},
+y2B2B :  {Hbar[i] Eps[i,j] LQ2Bbar[j,a] H[b] Eps[b,c] LQ2B[c,a],real},
+YQ2B1 : {-1/2 LQ2Bbar[a,c1]LQ2B[a,c1]LQ2Bbar[b,c2]LQ2B[b,c2],real},
+YQ2B3 : {-1/2 LQ2Bbar[a,c1]LQ2B[a,c2]LQ2Bbar[b,c2]LQ2B[b,c1],real}, 
+
+#From L3
+yLQ3 : {Hbar[i] H[i] LQ3bar[j,a] LQ3[j,a],real}, 
+y33 : {I*Eps3[i,j,k] Hbar[a] (Pauli[i,a,b]) H[b] LQ3bar[j,c] LQ3[k,c] ,real}
+YQ31 : {-1/2 LQ3bar[a,c1]LQ3[a,c1]LQ3bar[b,c2]LQ3[b,c2], real},
+YQ33 : {-1/2 LQ3bar[a,c1]LQ3[a,c2]LQ3bar[b,c2]LQ3[b,c1], real},
+YQ35 : {-1/2 LQ3bar[a,c1]LQ3[b,c1]LQ3bar[a,c2]LQ3[b,c2]}, 
+
+#From L11B
+YQ11B1 : -LQ1bar[c1] LQ1[c1] LQ1Bbar[c2] LQ1B[c2],
+YQ11B1D : -LQ1bar[c1] LQ1[c2] LQ1Bbar[c2] LQ1B[c1], 
+
+#From L12
+YQ121 : -LQ1bar[c1] LQ1[c1] LQ2bar[a,c2] LQ2[a,c2],
+YQ121D : -LQ1bar[c1] LQ1[c2] LQ2bar[a,c2] LQ2[a,c1], 
+
+#From L12B
+YQ12B1 : -LQ1bar[c1] LQ1[c1] LQ2Bbar[a,c2] LQ2B[a,c2],
+YQ12B1D : -LQ1bar[c1] LQ1[c2] LQ2Bbar[a,c2] LQ2B[a,c1], 
+
+#From L13
+YQ131 : -LQ1bar[c1] LQ1[c1] LQ3bar[a,c2] LQ3[a,c2],
+YQ131D : -LQ1bar[c1] LQ1[c2] LQ3bar[a,c2] LQ3[a,c1],
+y13: -Hbar[a] (Pauli[i,a,b]) LQ3[i,c] H[b] LQ1bar[c],
+YQ1313 : -1/2 LQ1bar[c1] LQ3[i,c1] LQ1bar[c2] LQ3[i,c2],
+YQ1333 : -LQ1bar[c1] LQ3[i,c1] LQ3bar[j,c2] LQ3[k,c2] (I*Eps3[i,j,k]), 
+
+#From L1B2
+YQ1B21 : -LQ1Bbar[c1] LQ1B[c1] LQ2bar[a,c2] LQ2[a,c2],
+YQ1B21D : -LQ1Bbar[c1] LQ1B[c2] LQ2bar[a,c2] LQ2[a,c1], 
+
+#From L1B2B
+YQ1B2B1 : -LQ1Bbar[c1] LQ1B[c1] LQ2Bbar[a,c2] LQ2B[a,c2],
+YQ1B2B1D : -LQ1Bbar[c1] LQ1B[c2] LQ2Bbar[a,c2] LQ2B[a,c1], 
+
+#From L1B3
+YQ1B31 : -LQ1Bbar[c1] LQ1B[c1] LQ3bar[a,c2] LQ3[a,c2],
+YQ1B31D : -LQ1Bbar[c1] LQ1B[c2] LQ3bar[a,c2] LQ3[a,c1], 
+y1B3: -H[a] Eps[a,b] LQ3bar[i,c] (Pauli[i,b,d]) H[d] LQ1B[c], 
+
+#From L22B
+YQ22B1 : -LQ2bar[b,c1] LQ2[b,c1] LQ2Bbar[a,c2] LQ2B[a,c2], 
+YQ22B1D : -LQ2bar[b,c1] LQ2[b,c2] LQ2Bbar[a,c2] LQ2B[a,c1],
+YQ22B3 : -LQ2bar[b,c1] LQ2B[b,c1] LQ2Bbar[a,c2] LQ2[a,c2], 
+YQ22B3D : -LQ2bar[b,c1] LQ2B[b,c2] LQ2Bbar[a,c2] LQ2[a,c1],
+y22B: -LQ2bar[a,c] H[a] H[b] Eps[b,d] LQ2B[d,c], 
+
+#From L23
+YQ231 : -LQ2bar[b,c1] LQ2[b,c1] LQ3bar[a,c2] LQ3[a,c2],
+YQ231D : -LQ2bar[b,c1] LQ2[b,c2] LQ3bar[a,c2] LQ3[a,c1],
+Y233: -Hbar[a] (Pauli[i,a,b]) LQ2[b,c1] LQ3[j,c2] (I*Eps3[i,j,k]) LQ3[k,c3] Eps3[c1,c2,c3], 
+YQ233 : -LQ2bar[a,c1] (Pauli[i,a,b]) LQ2[b,c1] LQ3bar[j,c2] (I*Eps3[i,j,k]) LQ3[k,c2],
+YQ233D : -LQ2bar[a,c1] (Pauli[i,a,b]) LQ2[b,c2] LQ3bar[j,c2] (I*Eps3[i,j,k]) LQ3[k,c1], 
+
+#From L2B3
+YQ2B31 : -LQ2Bbar[b,c1] LQ2B[b,c1] LQ3bar[a,c2] LQ3[a,c2],
+YQ2B31D : -LQ2Bbar[b,c1] LQ2B[b,c2] LQ3bar[a,c2] LQ3[a,c1], 
+Y2B33: -LQ2B[a,c1] Eps[a,b] (Pauli[i,b,d]) H[d] LQ3[j,c2] (I*Eps3[i,j,k]) LQ3[k,c3] Eps3[c1,c2,c3],
+YQ2B33 : -LQ2Bbar[a,c1] (Pauli[i,a,b]) LQ2B[b,c1] LQ3bar[j,c2] (I*Eps3[i,j,k]) LQ3[k,c2], 
+YQ2B33D : -LQ2Bbar[a,c1] (Pauli[i,a,b]) LQ2B[b,c2] LQ3bar[j,c2] (I*Eps3[i,j,k]) LQ3[k,c1], 
+
+#From L11B2
+Y11B2 : -LQ1[c1] LQ1B[c2] LQ2[a,c3] Eps[a,b] H[b] Eps3[c1,c2,c3], 
+
+#From L123
+Y123 : -LQ1[c1] Hbar[a] (Pauli[i,a,b]) LQ3[i,c3] LQ2[b,c2] Eps3[c1,c2,c3],
+YQ1223 : - LQ1bar[c1] LQ2bar[a,c2] (Pauli[i,a,b]) LQ3[i,c2] LQ2[b,c1],
+YQ1223D : - LQ1bar[c1] LQ2bar[a,c2] (Pauli[i,a,b]) LQ3[i,c1] LQ2[b,c2], 
+
+#From L12B3
+Y12B3: -LQ1[c1] LQ2B[a,c2] Eps[a,b] (Pauli[i,b,d]) LQ3[i,c3] H[d] Eps3[c1,c2,c3],
+YQ12B2B3 : - LQ1bar[c1] LQ2Bbar[a,c2] (Pauli[i,a,b]) LQ3[i,c2] LQ2B[b,c1],
+YQ12B2B3D : - LQ1bar[c1] LQ2Bbar[a,c2] (Pauli[i,a,b]) LQ3[i,c1] LQ2B[b,c2], 
+
+#From L2B33
+Y1B23: -LQ1B[c1] LQ2[a,c2] Eps[a,b] (Pauli[i,b,d]) LQ3[i,c3] H[d] Eps3[c1,c2,c3], 
+
+#From L1B22B3
+YQ1B2B23 : - LQ1Bbar[c1] LQ2bar[a,c2] (Pauli[i,a,b]) LQ3[i,c2] LQ2B[b,c1],
+YQ1B2B23D : - LQ1Bbar[c1] LQ2bar[a,c2] (Pauli[i,a,b]) LQ3[i,c1] LQ2B[b,c2], 
+
+#From L11B22B
+YQ11B2B2 : - LQ1bar[c1] LQ1B[c1] LQ2Bbar[a,c2] LQ2[a,c2],
+YQ11B2B2D : - LQ1bar[c1] LQ1B[c2] LQ2Bbar[a,c2] LQ2[a,c1], 
+
+ }, 
+
+ScalarMasses: { 
+
+mu : {+Hbar[i] H[i],squared}, 
+mLQ1 : {+LQ1bar[i] LQ1[i],squared}, 
+mLQ1B : {+LQ1Bbar[i] LQ1B[i],squared},
+mLQ2 : {+LQ2bar[i,a] LQ2[i,a],squared},
+mLQ2B : {+LQ2Bbar[i,a] LQ2B[i,a],squared},
+mLQ3 : {+LQ3bar[i,a] LQ3[i,a],squared},
+
+ }, 
+
+ } 
+
+
+#ScalarAnomalous: all
+#FermionAnomalous: all
+#GaugeParameter: 0
+
+#Vevs: {
+#    v: Pi[2]
+#}
+
+Substitutions: {
+    # Rename the gauge coupling constants
+    g_U1Y : g1,
+    g_SU2L : g2,
+    g_SU3c : g3,
+
+    # Possibly define GUT normalizations
+     g1 : sqrt(5/3) * g1,
+	 
+	#alpha1 : g1**(2)/(4 pi),
+    #alpha2 : g2**(2)/(4 pi),
+    #alpha3 : g3**(2)/(4 pi),
+
+    # Substitutions for Yukawa matrices
+    #Yu : [0, 0, 'yt'],
+    #Yd : [0, 0, 'yb'],
+    #Ye : [0, 0, 'ytau']
+}
+
+Latex: {
+
+
+    # Particles
+
+    uR : u,
+    dR : d,
+    eR : \ell,
+	
+	LQ1 :\phi_1,
+	LQ1s : \phi_{1s},
+	LQ1c : \phi_{1c},
+	
+	LQ1B : \phi_{\bar{1}},
+	LQ1Bs : \phi_{\bar{1}s},
+	LQ1Bc : \phi_{\bar{1}c},
+	
+	LQ2 : \phi_{2},
+	LQ2s : \phi_{2s},
+	LQ2c : \phi_{2c},
+	
+	LQ2B : \phi_{\bar{2}},
+	LQ2Bs : \phi_{\bar{2}s},
+	LQ2Bc : \phi_{\bar{2}c},
+	
+	LQ3 : \phi_{3},
+	LQ3s : \phi_{3s},
+	LQ3c : \phi_{3c},
+
+    Pi : \Pi,
+    Sigma : \Sigma,
+    
+	#Definitions
+	
+    Htilde : \tilde{H},
+	tGen : \left( \frac{\sigma}{2} \right ),
+	Pauli : \sigma,
+	
+	Eps3 : \epsilon,
+	auxEps :\tilde{\epsilon},
+
+    # Couplings
+
+    g1 : g_1,
+    g2 : g_2,
+    g3 : g_3,
+    
+	
+	#Yukawas
+	
+    #{Yu,Yd,Ye,yRR1,yLL1,yQRR1,yQLL1,yRR1B,yQRR1B,yRL2,yLR2,yRL2B,yLL3,yQLL3}
+	
+    Yu : Y_u,
+    Yd : Y_d,
+    Ye : Y_e,
+    
+	yRR1 : Y^{RR}_1,
+    yLL1 : Y^{LL}_1,
+    yQLL1 : Y^{Q,LL}_1,
+    yQRR1 : Y^{Q,RR}_1,
+	yRR1B : Y^{RR}_{\bar{1}},
+	yQRR1B : Y^{Q,RR}_{\bar{1}},
+	yRL2 : Y^{RL}_{2},
+	yLR2 : Y^{LR}_{2},
+	yRL2B : Y^{RL}_{\bar{2}},
+	yLL3 : Y^{LL}_3,
+	yQLL3 : Y^{Q,LL}_3,
+	
+	#TrilinearTerms
+	
+	#{A12B,A2B3, A12B2B, A1B22B}
+	
+	A12B : A_{1 \bar{2}},
+	A2B3 : A_{\bar{2} 3},
+	A12B2B : A_{1 \bar{2} \bar{2}},
+	A1B22B : A_{\bar{1} 2 \bar{2}},
+	
+	#QuarticTerms
+	
+	#From LQQuadratic
+	
+	#{yLQ1,yLQ1B,yLQ2,yLQ2B,LQ3,y22,y2B2B,y33,y22B,y1B3,y13}
+		
+	yLQ1 : Y^{LQ}_{1},
+	yLQ1B : Y^{LQ}_{\bar{1}},
+	yLQ2 : Y^{LQ}_{2},
+	yLQ2B : Y^{LQ}_{\bar{2}},
+	yLQ3 : Y^{LQ}_{3},
+    y22 : Y_{22},
+	y2B2B : Y_{\bar{2} \bar{2}},
+    y33 : Y_{33},
+    y22B : Y_{2 \bar{2}},
+    y1B3 : Y_{\bar{1} 3},
+    y13 : Y_{13},	
+	
+	
+	#From LQTriple
+	
+	#{Y11B2,Y123,Y12B3,Y1B23,Y233,Y2B33}
+	
+	Y11B2: Y_{1\bar{1} 2},
+	Y123: Y_{123},
+	Y12B3: Y_{1\bar{2} 3},
+	Y1B23: Y_{\bar{1}2 3},
+	Y233: Y_{233},
+	Y2B33: Y_{\bar{2}3 3},
+	
+	#From LQQuartic
+	
+	#Part 1
+	#{YQ11,YQ1B1,YQ21,LQ2B1,YQ31,YQ35,YQ11B1,YQ11B1D,YQ121,YQ121D,YQ12B1,YQ12B1D,YQ131,YQ131D,
+	#YQ1B21,YQ1B21D,YQ1B2B1,YQ1B2B1D,YQ1B31,YQ1B31D, YQ22B1,YQ22B1D,YQ231,YQ231D,YQ2B31,YQ2B31D}
+
+	
+	
+	YQ11 : Y^{(1)}_{1},
+	YQ1B1 : Y^{(1)}_{\bar{1}},
+	YQ21 : Y^{(1)}_{2},
+	YQ2B1: Y^{(1)}_{\bar{2}},
+	YQ31 : Y^{(1)}_{3},
+	YQ35 : Y^{(5)}_{3},
+	
+	YQ11B1 : Y^{(1)}_{1 \bar{1}},
+	YQ11B1D : \hat{Y}^{(1)}_{1 \bar{1}},
+ 	YQ121 : Y^{(1)}_{1 2},
+ 	YQ121D : \hat{Y}^{(1)}_{1 2},
+ 	YQ12B1 : Y^{(1)}_{1 \bar{2}},
+ 	YQ12B1D : \hat{Y}^{(1)}_{1 \bar{2}},
+ 	YQ131 : Y^{(1)}_{1 3},
+	YQ131D : \hat{Y}^{(1)}_{1 3},
+	
+	YQ1B21 : Y^{(1)}_{\bar{1} 2},
+	YQ1B21D : \hat{Y}^{(1)}_{\bar{1} 2},
+	YQ1B2B1 : Y^{(1)}_{\bar{1} \bar{2}},
+	YQ1B2B1D : \hat{Y}^{(1)}_{\bar{1} \bar{2}},
+	YQ1B31 : Y^{(1)}_{\bar{1} 3},
+	YQ1B31D : \hat{Y}^{(1)}_{\bar{1} 3}, 
+	
+ 	YQ22B1 : Y^{(1)}_{2 \bar{2}},
+ 	YQ22B1D : \hat{Y}^{(1)}_{2 \bar{2}},
+ 	YQ231 : Y^{(1)}_{2 3},
+ 	YQ231D : \hat{Y}^{(1)}_{2 3}, 
+
+ 	YQ2B31 : Y^{(1)}_{\bar{2} 3},
+ 	YQ2B31D : \hat{Y}^{(1)}_{\bar{2} 3},	
+
+     #Part 2 
+	 #{YQ22B3,YQ22B3D,YQ233,YQ233D,YQ2B33,YQ2B33D,YQ1223,YQ1223D,YQ12B2B3,YQ12B2B3D,YQ1B2B23,YQ1B2B23D,YQ11B2B2,YQ11B2B2D,YQ1313,YQ1333}
+
+    YQ22B3 : Y^{(3)}_{2 \bar{2}},
+    YQ22B3D : \hat{Y}^{(3)}_{2 \bar{2}},
+	YQ233 : Y^{(3)}_{2 3},
+    YQ233D : \hat{Y}^{(3)}_{2 3},
+    YQ2B33 : Y^{(3)}_{\bar{2} 3},
+    YQ2B33D : \hat{Y}^{(3)}_{\bar{2} 3},
+    YQ1223 : Y_{1223},
+	YQ1223D : \hat{Y}_{1223},
+	YQ12B2B3 : Y_{1\bar{2}\bar{2}3},
+	YQ12B2B3D : \hat{Y}_{1\bar{2}\bar{2}3},
+	YQ1B2B23 : Y_{\bar{1}\bar{2}2 3},
+	YQ1B2B23D : \hat{Y}_{\bar{1}\bar{2}2 3},
+	YQ11B2B2 : Y_{1\bar{1}\bar{2} 3},
+	YQ11B2B2D : \hat{Y}_{1\bar{1}\bar{2} 3},
+	YQ1313 : Y_{1313},
+	YQ1333 : Y_{1333},
+	
+	#Relevant Couplings
+	
+    lambda : \lambda,
+    mu : \mu,
+	mLQ1 : m_{1},
+	mLQ1B : m_{\bar{1}},
+    mLQ2 : m_{{2}},
+    mLQ2B : m_{\bar{2}},
+    mLQ3 : m_{{3}},	
+    #yt : y_t,
+    #yb : y_b,
+    #ytau: y_\tau
+}
+
